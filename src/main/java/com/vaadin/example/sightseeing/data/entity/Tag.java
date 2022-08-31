@@ -1,19 +1,33 @@
 package com.vaadin.example.sightseeing.data.entity;
 
+
 import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class Tag extends AbstractEntity {
 
-    private Integer place;
+    @ManyToOne
+    private Place place;
     private String name;
     private String val;
-    private boolean enabled;
+    private boolean enabled = true;
+    public Tag() {
+    }
 
-    public Integer getPlace() {
+    public Tag(Place place, String name, String val) {
+        this.place = place;
+        this.name = name;
+        this.val = val;
+        if (place.getName() == null) {
+
+        }
+    }
+
+    public Place getPlace() {
         return place;
     }
-    public void setPlace(Integer place) {
+    public void setPlace(Place place) {
         this.place = place;
     }
     public String getName() {
@@ -33,6 +47,11 @@ public class Tag extends AbstractEntity {
     }
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+    @Override
+    public String toString() {
+        return "[place=" + place.getId()
+                + ", name=" + name + ", val=" + val + ", enabled=" + enabled + "]";
     }
 
 }
