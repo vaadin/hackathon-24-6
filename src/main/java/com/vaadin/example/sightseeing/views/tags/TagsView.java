@@ -43,7 +43,7 @@ public class TagsView extends Div implements BeforeEnterObserver {
 
     private Grid<Tag> grid = new Grid<>(Tag.class, false);
 
-    private TextField place;
+    private TextField placeName;
     private TextField name;
     private TextField val;
     private Checkbox enabled;
@@ -71,7 +71,7 @@ public class TagsView extends Div implements BeforeEnterObserver {
         add(splitLayout);
 
         // Configure Grid
-        grid.addColumn("place").setAutoWidth(true);
+        grid.addColumn(i -> i.getPlace().getName()).setHeader("place").setAutoWidth(true);
         grid.addColumn("name").setAutoWidth(true);
         grid.addColumn("val").setAutoWidth(true);
         LitRenderer<Tag> enabledRenderer = LitRenderer.<Tag>of(
@@ -100,9 +100,6 @@ public class TagsView extends Div implements BeforeEnterObserver {
 
         // Configure Form
         binder = new BeanValidationBinder<>(Tag.class);
-
-        // Bind fields. This is where you'd define e.g. validation rules
-        binder.forField(place).withConverter(new StringToIntegerConverter("Only numbers are allowed")).bind("place");
 
         binder.bindInstanceFields(this);
 
@@ -156,11 +153,11 @@ public class TagsView extends Div implements BeforeEnterObserver {
         editorLayoutDiv.add(editorDiv);
 
         FormLayout formLayout = new FormLayout();
-        place = new TextField("Place");
+        placeName = new TextField("Place");
         name = new TextField("Name");
         val = new TextField("Val");
         enabled = new Checkbox("Enabled");
-        Component[] fields = new Component[]{place, name, val, enabled};
+        Component[] fields = new Component[] { placeName, name, val, enabled };
 
         formLayout.add(fields);
         editorDiv.add(formLayout);
@@ -197,6 +194,5 @@ public class TagsView extends Div implements BeforeEnterObserver {
     private void populateForm(Tag value) {
         this.tag = value;
         binder.readBean(this.tag);
-
     }
 }

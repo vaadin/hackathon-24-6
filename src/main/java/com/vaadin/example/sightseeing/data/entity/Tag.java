@@ -24,6 +24,10 @@ public class Tag extends AbstractEntity {
         }
     }
 
+    public String getPlaceName() {
+        return this.place.getName();
+    }
+
     public Place getPlace() {
         return place;
     }

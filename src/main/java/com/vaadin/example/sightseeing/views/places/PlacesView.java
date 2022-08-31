@@ -1,5 +1,14 @@
 package com.vaadin.example.sightseeing.views.places;
 
+import java.time.Duration;
+import java.util.Optional;
+import java.util.UUID;
+
+import javax.annotation.security.RolesAllowed;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+
 import com.vaadin.example.sightseeing.data.entity.Place;
 import com.vaadin.example.sightseeing.data.service.PlaceService;
 import com.vaadin.flow.component.Component;
@@ -20,19 +29,13 @@ import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
-import com.vaadin.flow.data.converter.StringToIntegerConverter;
+import com.vaadin.flow.data.converter.StringToFloatConverter;
 import com.vaadin.flow.data.renderer.LitRenderer;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
-import java.time.Duration;
-import java.util.Optional;
-import java.util.UUID;
-import javax.annotation.security.RolesAllowed;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 
 @PageTitle("Places")
 @Route(value = "places/:placeID?/:action?(edit)")
@@ -48,9 +51,6 @@ public class PlacesView extends Div implements BeforeEnterObserver {
     private TextField name;
     private TextField x;
     private TextField y;
-    private TextField tags;
-    private DateTimePicker updated;
-    private TextField oid;
     private Checkbox enabled;
 
     private Button cancel = new Button("Cancel");
@@ -70,6 +70,7 @@ public class PlacesView extends Div implements BeforeEnterObserver {
         // Create UI
         SplitLayout splitLayout = new SplitLayout();
 
+
         createGridLayout(splitLayout);
         createEditorLayout(splitLayout);
 
@@ -79,9 +80,6 @@ public class PlacesView extends Div implements BeforeEnterObserver {
         grid.addColumn("name").setAutoWidth(true);
         grid.addColumn("x").setAutoWidth(true);
         grid.addColumn("y").setAutoWidth(true);
-        grid.addColumn("tags").setAutoWidth(true);
-        grid.addColumn("updated").setAutoWidth(true);
-        grid.addColumn("oid").setAutoWidth(true);
         LitRenderer<Place> enabledRenderer = LitRenderer.<Place>of(
                 "<vaadin-icon icon='vaadin:${item.icon}' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: ${item.color};'></vaadin-icon>")
                 .withProperty("icon", enabled -> enabled.isEnabled() ? "check" : "minus").withProperty("color",
@@ -110,9 +108,8 @@ public class PlacesView extends Div implements BeforeEnterObserver {
         binder = new BeanValidationBinder<>(Place.class);
 
         // Bind fields. This is where you'd define e.g. validation rules
-        binder.forField(x).withConverter(new StringToIntegerConverter("Only numbers are allowed")).bind("x");
-        binder.forField(y).withConverter(new StringToIntegerConverter("Only numbers are allowed")).bind("y");
-        binder.forField(oid).withConverter(new StringToIntegerConverter("Only numbers are allowed")).bind("oid");
+        binder.forField(x).withConverter(new StringToFloatConverter("Only numbers are allowed")).bind("x");
+        binder.forField(y).withConverter(new StringToFloatConverter("Only numbers are allowed")).bind("y");
 
         binder.bindInstanceFields(this);
 
@@ -169,12 +166,8 @@ public class PlacesView extends Div implements BeforeEnterObserver {
         name = new TextField("Name");
         x = new TextField("X");
         y = new TextField("Y");
-        tags = new TextField("Tags");
-        updated = new DateTimePicker("Updated");
-        updated.setStep(Duration.ofSeconds(1));
-        oid = new TextField("Oid");
         enabled = new Checkbox("Enabled");
-        Component[] fields = new Component[]{name, x, y, tags, updated, oid, enabled};
+        Component[] fields = new Component[] { name, x, y, enabled };
 
         formLayout.add(fields);
         editorDiv.add(formLayout);
