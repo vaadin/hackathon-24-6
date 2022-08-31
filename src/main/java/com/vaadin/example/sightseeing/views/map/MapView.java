@@ -1,7 +1,7 @@
 package com.vaadin.example.sightseeing.views.map;
 
+import com.vaadin.example.sightseeing.data.generator.DataGenerator;
 import com.vaadin.flow.component.map.Map;
-import com.vaadin.flow.component.map.configuration.Coordinate;
 import com.vaadin.flow.component.map.configuration.View;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
@@ -22,8 +22,8 @@ public class MapView extends VerticalLayout {
         setPadding(false);
         map.getElement().setAttribute("theme", "borderless");
         View view = map.getView();
-        view.setCenter(new Coordinate(10.0, 55.0));
-        view.setZoom(4);
+        view.setCenter(DataGenerator.CENTER);
+        view.setZoom(12);
         addAndExpand(map);
     }
 }
