@@ -2,6 +2,7 @@ package com.vaadin.example.sightseeing.views.tags;
 
 import com.vaadin.example.sightseeing.data.entity.Tag;
 import com.vaadin.example.sightseeing.data.service.TagService;
+import com.vaadin.example.sightseeing.ui.AdminNav;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -162,6 +163,7 @@ public class TagsView extends Div implements BeforeEnterObserver {
         formLayout.add(fields);
         editorDiv.add(formLayout);
         createButtonLayout(editorLayoutDiv);
+        editorLayoutDiv.add(new AdminNav("tags"));
 
         splitLayout.addToSecondary(editorLayoutDiv);
     }
