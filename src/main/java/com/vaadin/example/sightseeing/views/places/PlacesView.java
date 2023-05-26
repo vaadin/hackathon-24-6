@@ -1,9 +1,6 @@
 package com.vaadin.example.sightseeing.views.places;
 
 import java.util.Optional;
-import java.util.UUID;
-
-import javax.annotation.security.RolesAllowed;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -35,6 +32,8 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
+
+import jakarta.annotation.security.RolesAllowed;
 
 @PageTitle("Places")
 @Route(value = "places/:placeID?/:action?(edit)")
@@ -69,7 +68,6 @@ public class PlacesView extends Div implements BeforeEnterObserver {
         // Create UI
         SplitLayout splitLayout = new SplitLayout();
 
-
         createGridLayout(splitLayout);
         createEditorLayout(splitLayout);
 
@@ -79,24 +77,31 @@ public class PlacesView extends Div implements BeforeEnterObserver {
         grid.addColumn("name").setAutoWidth(true);
         grid.addColumn("x").setAutoWidth(true);
         grid.addColumn("y").setAutoWidth(true);
-        LitRenderer<Place> enabledRenderer = LitRenderer.<Place>of(
+        LitRenderer<Place> enabledRenderer = LitRenderer.<Place> of(
                 "<vaadin-icon icon='vaadin:${item.icon}' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: ${item.color};'></vaadin-icon>")
-                .withProperty("icon", enabled -> enabled.isEnabled() ? "check" : "minus").withProperty("color",
+                .withProperty("icon",
+                        enabled -> enabled.isEnabled() ? "check" : "minus")
+                .withProperty("color",
                         enabled -> enabled.isEnabled()
                                 ? "var(--lumo-primary-text-color)"
                                 : "var(--lumo-disabled-text-color)");
 
         grid.addColumn(enabledRenderer).setHeader("Enabled").setAutoWidth(true);
 
-        grid.setItems(query -> placeService.list(
-                PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
-                .stream());
+        grid.setItems(
+                query -> placeService
+                        .list(PageRequest
+                                .of(query.getPage(), query.getPageSize(),
+                                        VaadinSpringDataHelpers
+                                                .toSpringDataSort(query)))
+                        .stream());
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
 
         // when a row is selected or deselected, populate form
         grid.asSingleSelect().addValueChangeListener(event -> {
             if (event.getValue() != null) {
-                UI.getCurrent().navigate(String.format(PLACE_EDIT_ROUTE_TEMPLATE, event.getValue().getId()));
+                UI.getCurrent().navigate(String.format(
+                        PLACE_EDIT_ROUTE_TEMPLATE, event.getValue().getId()));
             } else {
                 clearForm();
                 UI.getCurrent().navigate(PlacesView.class);
@@ -107,8 +112,14 @@ public class PlacesView extends Div implements BeforeEnterObserver {
         binder = new BeanValidationBinder<>(Place.class);
 
         // Bind fields. This is where you'd define e.g. validation rules
-        binder.forField(x).withConverter(new StringToDoubleConverter("Only numbers are allowed")).bind("x");
-        binder.forField(y).withConverter(new StringToDoubleConverter("Only numbers are allowed")).bind("y");
+        binder.forField(x)
+                .withConverter(
+                        new StringToDoubleConverter("Only numbers are allowed"))
+                .bind("x");
+        binder.forField(y)
+                .withConverter(
+                        new StringToDoubleConverter("Only numbers are allowed"))
+                .bind("y");
 
         binder.bindInstanceFields(this);
 
@@ -119,17 +130,18 @@ public class PlacesView extends Div implements BeforeEnterObserver {
 
         save.addClickListener(e -> {
             try {
-                if (this.place == null) {
-                    this.place = new Place();
+                if (place == null) {
+                    place = new Place();
                 }
-                binder.writeBean(this.place);
-                placeService.update(this.place);
+                binder.writeBean(place);
+                placeService.update(place);
                 clearForm();
                 refreshGrid();
                 Notification.show("Place details stored.");
                 UI.getCurrent().navigate(PlacesView.class);
             } catch (ValidationException validationException) {
-                Notification.show("An exception happened while trying to store the place details.");
+                Notification.show(
+                        "An exception happened while trying to store the place details.");
             }
         });
 
@@ -137,14 +149,18 @@ public class PlacesView extends Div implements BeforeEnterObserver {
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        Optional<UUID> placeId = event.getRouteParameters().get(PLACE_ID).map(UUID::fromString);
+        Optional<Long> placeId = event.getRouteParameters().get(PLACE_ID)
+                .map(Long::parseLong);
         if (placeId.isPresent()) {
             Optional<Place> placeFromBackend = placeService.get(placeId.get());
             if (placeFromBackend.isPresent()) {
                 populateForm(placeFromBackend.get());
             } else {
-                Notification.show(String.format("The requested place was not found, ID = %s", placeId.get()), 3000,
-                        Notification.Position.BOTTOM_START);
+                Notification.show(
+                        String.format(
+                                "The requested place was not found, ID = %s",
+                                placeId.get()),
+                        3000, Notification.Position.BOTTOM_START);
                 // when a row is selected but the data is no longer available,
                 // refresh grid
                 refreshGrid();
@@ -202,8 +218,8 @@ public class PlacesView extends Div implements BeforeEnterObserver {
     }
 
     private void populateForm(Place value) {
-        this.place = value;
-        binder.readBean(this.place);
+        place = value;
+        binder.readBean(place);
 
     }
 }

@@ -1,12 +1,13 @@
 package com.vaadin.example.sightseeing.data.service;
 
-import com.vaadin.example.sightseeing.data.entity.Tag;
 import java.util.Optional;
-import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import com.vaadin.example.sightseeing.data.entity.Tag;
 
 @Service
 public class TagService {
@@ -18,7 +19,7 @@ public class TagService {
         this.repository = repository;
     }
 
-    public Optional<Tag> get(UUID id) {
+    public Optional<Tag> get(Long id) {
         return repository.findById(id);
     }
 
@@ -26,7 +27,7 @@ public class TagService {
         return repository.save(entity);
     }
 
-    public void delete(UUID id) {
+    public void delete(Long id) {
         repository.deleteById(id);
     }
 

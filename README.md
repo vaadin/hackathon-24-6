@@ -1,5 +1,7 @@
-# hackathon-23-2
-Repository for the 23.2 hackathon
+# hackathon-24-1
+This is the 23.2 hackathon project that has been upgraded to 24.1. Switched ID types from UUID to Long and added a button for adding a custom-styled marker.
+
+The instructions below belong to the original version. 
 
 
 ## About the APP

@@ -1,5 +1,10 @@
 package com.vaadin.example.sightseeing.views.tags;
 
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+
 import com.vaadin.example.sightseeing.data.entity.Tag;
 import com.vaadin.example.sightseeing.data.service.TagService;
 import com.vaadin.example.sightseeing.ui.AdminNav;
@@ -20,18 +25,14 @@ import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
-import com.vaadin.flow.data.converter.StringToIntegerConverter;
 import com.vaadin.flow.data.renderer.LitRenderer;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
-import java.util.Optional;
-import java.util.UUID;
-import javax.annotation.security.RolesAllowed;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
+
+import jakarta.annotation.security.RolesAllowed;
 
 @PageTitle("Tags")
 @Route(value = "tags/:tagID?/:action?(edit)")
@@ -72,27 +73,35 @@ public class TagsView extends Div implements BeforeEnterObserver {
         add(splitLayout);
 
         // Configure Grid
-        grid.addColumn(i -> i.getPlace().getName()).setHeader("place").setAutoWidth(true);
+        grid.addColumn(i -> i.getPlace().getName()).setHeader("place")
+                .setAutoWidth(true);
         grid.addColumn("name").setAutoWidth(true);
         grid.addColumn("val").setAutoWidth(true);
-        LitRenderer<Tag> enabledRenderer = LitRenderer.<Tag>of(
+        LitRenderer<Tag> enabledRenderer = LitRenderer.<Tag> of(
                 "<vaadin-icon icon='vaadin:${item.icon}' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: ${item.color};'></vaadin-icon>")
-                .withProperty("icon", enabled -> enabled.isEnabled() ? "check" : "minus").withProperty("color",
+                .withProperty("icon",
+                        enabled -> enabled.isEnabled() ? "check" : "minus")
+                .withProperty("color",
                         enabled -> enabled.isEnabled()
                                 ? "var(--lumo-primary-text-color)"
                                 : "var(--lumo-disabled-text-color)");
 
         grid.addColumn(enabledRenderer).setHeader("Enabled").setAutoWidth(true);
 
-        grid.setItems(query -> tagService.list(
-                PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
-                .stream());
+        grid.setItems(
+                query -> tagService
+                        .list(PageRequest
+                                .of(query.getPage(), query.getPageSize(),
+                                        VaadinSpringDataHelpers
+                                                .toSpringDataSort(query)))
+                        .stream());
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
 
         // when a row is selected or deselected, populate form
         grid.asSingleSelect().addValueChangeListener(event -> {
             if (event.getValue() != null) {
-                UI.getCurrent().navigate(String.format(TAG_EDIT_ROUTE_TEMPLATE, event.getValue().getId()));
+                UI.getCurrent().navigate(String.format(TAG_EDIT_ROUTE_TEMPLATE,
+                        event.getValue().getId()));
             } else {
                 clearForm();
                 UI.getCurrent().navigate(TagsView.class);
@@ -111,17 +120,18 @@ public class TagsView extends Div implements BeforeEnterObserver {
 
         save.addClickListener(e -> {
             try {
-                if (this.tag == null) {
-                    this.tag = new Tag();
+                if (tag == null) {
+                    tag = new Tag();
                 }
-                binder.writeBean(this.tag);
-                tagService.update(this.tag);
+                binder.writeBean(tag);
+                tagService.update(tag);
                 clearForm();
                 refreshGrid();
                 Notification.show("Tag details stored.");
                 UI.getCurrent().navigate(TagsView.class);
             } catch (ValidationException validationException) {
-                Notification.show("An exception happened while trying to store the tag details.");
+                Notification.show(
+                        "An exception happened while trying to store the tag details.");
             }
         });
 
@@ -129,14 +139,18 @@ public class TagsView extends Div implements BeforeEnterObserver {
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        Optional<UUID> tagId = event.getRouteParameters().get(TAG_ID).map(UUID::fromString);
+        Optional<Long> tagId = event.getRouteParameters().get(TAG_ID)
+                .map(Long::parseLong);
         if (tagId.isPresent()) {
             Optional<Tag> tagFromBackend = tagService.get(tagId.get());
             if (tagFromBackend.isPresent()) {
                 populateForm(tagFromBackend.get());
             } else {
-                Notification.show(String.format("The requested tag was not found, ID = %s", tagId.get()), 3000,
-                        Notification.Position.BOTTOM_START);
+                Notification.show(
+                        String.format(
+                                "The requested tag was not found, ID = %s",
+                                tagId.get()),
+                        3000, Notification.Position.BOTTOM_START);
                 // when a row is selected but the data is no longer available,
                 // refresh grid
                 refreshGrid();
@@ -194,7 +208,7 @@ public class TagsView extends Div implements BeforeEnterObserver {
     }
 
     private void populateForm(Tag value) {
-        this.tag = value;
-        binder.readBean(this.tag);
+        tag = value;
+        binder.readBean(tag);
     }
 }

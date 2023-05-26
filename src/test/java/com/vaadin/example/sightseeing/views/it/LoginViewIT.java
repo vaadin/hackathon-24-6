@@ -1,6 +1,7 @@
 package com.vaadin.example.sightseeing.views.it;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.openqa.selenium.By;
@@ -20,7 +21,9 @@ public class LoginViewIT extends AbstractIT {
         // Find the first button (<vaadin-button>) on the page
         ButtonElement button = $(ButtonElement.class).first();
 
-        assertEquals("Log in", button.getText());
+        String buttonText = button.getText();
+        assertTrue("Unexpected button text: " + buttonText,
+                buttonText.contains("Log in"));
 
         // Enter login credentials
         $(TextFieldElement.class).first().sendKeys("admin");

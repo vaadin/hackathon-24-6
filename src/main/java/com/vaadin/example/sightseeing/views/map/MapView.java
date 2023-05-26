@@ -4,8 +4,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import javax.annotation.security.PermitAll;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.example.sightseeing.data.Role;
@@ -16,15 +14,21 @@ import com.vaadin.example.sightseeing.security.AuthenticatedUser;
 import com.vaadin.example.sightseeing.ui.AdminNav;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.Html;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.map.Map;
 import com.vaadin.flow.component.map.configuration.Coordinate;
 import com.vaadin.flow.component.map.configuration.View;
+import com.vaadin.flow.component.map.configuration.feature.MarkerFeature;
+import com.vaadin.flow.component.map.configuration.style.TextStyle;
 import com.vaadin.flow.component.map.events.MapClickEvent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
+
+import jakarta.annotation.security.PermitAll;
 
 @PageTitle("Map")
 @Route(value = "map")
@@ -76,8 +80,8 @@ public class MapView extends VerticalLayout {
             if (!places.isEmpty()) {
                 Collections.sort(places, getPlaceComparator(coordinate));
             }
-            StringBuilder sb = new StringBuilder(
-                    "<span>Nearby: " + places.size());
+            int count = places.size();
+            StringBuilder sb = new StringBuilder("<span>Nearby: " + count);
             int index = 0;
             for (Place place : places) {
                 if (index >= 10) {
@@ -93,6 +97,25 @@ public class MapView extends VerticalLayout {
             }
             sb.append("</span>");
             dialog.add(new Html(sb.toString()));
+            dialog.add(new Html("<br>"));
+            Button button = new Button("Add marker!", event -> {
+                // Create a marker with a custom text style
+                TextStyle textStyle = new TextStyle();
+                // Customize font and color
+                textStyle.setFont("bold 16px sans-serif");
+                textStyle.setStroke("#fdf4ff", 3);
+                textStyle.setFill("#701a75");
+                // Position text to the right of the icon
+                textStyle.setTextAlign(TextStyle.TextAlign.LEFT);
+                textStyle.setOffset(22, -18);
+
+                MarkerFeature customizedMarker = new MarkerFeature(coordinate);
+                customizedMarker.setText("Nearby: " + count);
+                customizedMarker.setTextStyle(textStyle);
+                map.getFeatureLayer().addFeature(customizedMarker);
+            });
+            button.addClassName("myButton");
+            dialog.add(button);
             dialog.open();
         };
     }
