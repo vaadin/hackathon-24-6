@@ -1,5 +1,8 @@
-# hackathon-24-1
-This is the 23.2 hackathon project that has been upgraded to 24.1. Switched ID types from UUID to Long and added a button for adding a custom-styled marker.
+# hackathon-24-2
+This is the 23.2 hackathon project that was earlier upgraded to 24.1 and now again to 24.2. Meant to try to setup web push notifications, but ran into environment issues and then ran out of time after all the installing and restarting.
+
+## hackathon-24-1
+Switched ID types from UUID to Long and added a button for adding a custom-styled marker.
 
 The instructions below belong to the original version. 
 
