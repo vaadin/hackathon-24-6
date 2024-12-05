@@ -1,3 +1,12 @@
+# hackathon-24-6
+Now upgraded to 24.6. This required updating Spring Boot version, which in turn caused a conflict with the `selenium.version` property (fixed by upgrading the version), and the H2 database was no longer compatible. Spent ages trying to get the database upgraded (with no success, even H2 Console won't run on my computer), until I had to give up and just re-generate it from scratch. Not ideal, but at least I could move forward.
+
+Once I finally got the server up and running again I could log in, but for some reason that keeps now throwing me to http://localhost:8080/line-awesome/dist/line-awesome/css/line-awesome.min.css?continue instead of the actual application. But at least the application works again, if I navigate there manually.
+
+Also added `org.parttio.line-awesome` dependency and removed the outdated feature flag from the previous round.
+
+Ran out of time (again...) so didn't really get a chance to test the 24.6 features.
+
 # hackathon-24-2
 This is the 23.2 hackathon project that was earlier upgraded to 24.1 and now again to 24.2. Meant to try to setup web push notifications, but ran into environment issues and then ran out of time after all the installing and restarting.
 
